@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "1070624676579",
+    "firebase_url": "https://kostgo-9e183-default-rtdb.firebaseio.com",
+    "project_id": "kostgo-9e183",
+    "storage_bucket": "kostgo-9e183.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070624676579:android:87f506e1c80ea9264043d6",
+        "android_client_info": {
+          "package_name": "com.example.kostGo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6VpMVR521dO2gk9cdP1M6BHR8VJgSCSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070624676579:android:ad7705a2fe24547f4043d6",
+        "android_client_info": {
+          "package_name": "com.example.kostgo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6VpMVR521dO2gk9cdP1M6BHR8VJgSCSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
