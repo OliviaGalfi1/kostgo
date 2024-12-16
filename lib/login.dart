@@ -5,6 +5,7 @@ import 'package:kostgo/forgetpasword.dart';
 import 'package:kostgo/register.dart';
 import 'package:kostgo/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,11 +16,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
   final _auth = FirebaseAuth.instance;
+  final _googleSignIn = GoogleSignIn();
 
   bool _isLoading = false;
 
@@ -29,14 +29,12 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Background
           Positioned.fill(
             child: Image.asset(
               "images/background5.png",
               fit: BoxFit.cover,
             ),
           ),
-          // Konten
           Form(
             key: _formKey,
             child: Column(
@@ -165,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 35),
+                const SizedBox(height: 25),
                 Center(
                   child: _isLoading
                       ? const CircularProgressIndicator()
@@ -186,6 +184,39 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.white,
                               ),
                             ),
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 12),
+                // Tombol Sign In dengan Google
+                Center(
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white, // Warna teks
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 60, vertical: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          onPressed: _signInWithGoogle,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset("images/google_icon.png", width: 24),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Sign In with Google",
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                 ),
@@ -228,6 +259,53 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Melakukan sign in dengan Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        // User membatalkan login, keluar
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Mendapatkan credential dari Google SignIn
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
+
+      // Melakukan sign in dengan credential dari Google
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        // Arahkan ke halaman HomeScreen setelah login berhasil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(
+        msg: e.message ?? 'Terjadi kesalahan',
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _handleLogin(BuildContext context) async {

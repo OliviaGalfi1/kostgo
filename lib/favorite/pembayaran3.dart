@@ -173,7 +173,6 @@ class _Pembayaran3State extends State<Pembayaran3> {
               ],
             ),
           ),
-          // Garis abu-abu di bawah image dan text
           Padding(
             padding: const EdgeInsets.only(
               top: 210,
@@ -227,7 +226,6 @@ class _Pembayaran3State extends State<Pembayaran3> {
               ],
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(
               top: 305,
@@ -237,7 +235,6 @@ class _Pembayaran3State extends State<Pembayaran3> {
               color: lightGreyColor, // Warna garis abu-abu
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(top: 323, left: 110, right: 15),
             child: Column(
@@ -439,15 +436,27 @@ class _Pembayaran3State extends State<Pembayaran3> {
               ],
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(top: 740, left: 95),
             child: SizedBox(
               width: 223,
               height: 60,
               child: OutlinedButton(
-                onPressed: () =>
-                    _showPembayaranDialogDialog(context), // Show dialog
+                onPressed: () {
+                  // Menampilkan notifikasi pembayaran berhasil
+                  Fluttertoast.showToast(
+                    msg: "Pembayaran berhasil!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.green,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+
+                  // Menampilkan dialog pembayaran berhasil
+                  _showPembayaranDialogDialog(context);
+                },
                 style: OutlinedButton.styleFrom(
                   backgroundColor: darkBlueColor,
                   shape: RoundedRectangleBorder(
