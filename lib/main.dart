@@ -64,12 +64,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setupFlutterNotifications();
+
   if (!kIsWeb) {
     await setupFlutterNotifications();
-  } // Initialize notifications setup
+  }
+
+  // Mendapatkan dan mencetak FCM token
   FirebaseMessaging.instance.getToken().then((String? token) {
-    print("FCM Token: $token");
+    print("FCM Token: $token"); // Menampilkan token di console
   });
+
   runApp(MyApp());
 }
 
@@ -85,10 +89,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
+    // Menangani pesan yang diterima saat aplikasi dalam foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       showFlutterNotification(message);
     });
 
+    // Menangani ketika aplikasi dibuka dari notifikasi
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
       // Add navigation logic here if necessary
