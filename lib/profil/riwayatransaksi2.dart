@@ -54,7 +54,7 @@ class rtransaksi2 extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(
               top: 130,
-              left: 50,
+              left: 30,
             ), // Mengatur jarak dari atas
             child: Image.asset(
               "images/transaksi.png",
@@ -63,7 +63,7 @@ class rtransaksi2 extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 689, left: 100),
+            padding: EdgeInsets.only(top: 689, left: 70),
             child: Container(
               width: 223,
               height: 46,

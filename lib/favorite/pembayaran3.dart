@@ -441,7 +441,7 @@ class _Pembayaran3State extends State<Pembayaran3> {
           ),
 
           Padding(
-            padding: const EdgeInsets.only(top: 750, left: 95),
+            padding: const EdgeInsets.only(top: 740, left: 95),
             child: SizedBox(
               width: 223,
               height: 60,

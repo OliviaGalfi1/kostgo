@@ -678,7 +678,7 @@ class _Pembayaran_2State extends State<Pembayaran_2> {
           ),
           const Divider(color: Colors.grey),
           const Padding(
-            padding: EdgeInsets.only(top: 570, left: 45),
+            padding: EdgeInsets.only(top: 545, left: 45),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -697,7 +697,7 @@ class _Pembayaran_2State extends State<Pembayaran_2> {
           ),
           const Divider(color: Colors.grey),
           Padding(
-            padding: const EdgeInsets.only(top: 610, left: 40),
+            padding: const EdgeInsets.only(top: 590, left: 40),
             child: Row(
               children: [
                 IconButton(
@@ -734,7 +734,7 @@ class _Pembayaran_2State extends State<Pembayaran_2> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 690, left: 90),
+            padding: const EdgeInsets.only(top: 665, left: 90),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

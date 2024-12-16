@@ -91,7 +91,7 @@ class rTransaksi extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     height: 80,
-                    width: 250,
+                    width: 200,
                     decoration: BoxDecoration(
                       color: whiteColor, // Warna background container
                       borderRadius: BorderRadius.circular(8), // Rounded corners

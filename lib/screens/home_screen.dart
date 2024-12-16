@@ -173,7 +173,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Popular Cities",
+                    "Popular Subdistrict",
                     style: regularBlackText.copyWith(
                       fontSize: 14,
                     ),
@@ -430,7 +430,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Recommended Space",
+                    "Recommended Kost",
                     style: regularBlackText.copyWith(
                       fontSize: 14,
                     ),
