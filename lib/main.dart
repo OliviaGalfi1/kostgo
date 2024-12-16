@@ -27,10 +27,12 @@ Future<void> setupFlutterNotifications() async {
 
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     await flutterLocalNotificationsPlugin!
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel!);
 
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -61,10 +63,13 @@ void showFlutterNotification(RemoteMessage message) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await setupFlutterNotifications(); 
+  await setupFlutterNotifications();
   if (!kIsWeb) {
     await setupFlutterNotifications();
-  }// Initialize notifications setup
+  } // Initialize notifications setup
+  FirebaseMessaging.instance.getToken().then((String? token) {
+    print("FCM Token: $token");
+  });
   runApp(MyApp());
 }
 
@@ -79,11 +84,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       showFlutterNotification(message);
     });
-    
+
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
       // Add navigation logic here if necessary

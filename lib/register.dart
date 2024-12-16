@@ -2,8 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kostgo/home.dart'; // Pastikan HomePage ada di file ini
 import 'login.dart';
+import 'screens/home_screen.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -51,7 +54,7 @@ class _RegisterState extends State<Register> {
                       right: 88,
                     ),
                     child: Text(
-                      "Daftar Akun ",
+                      "Daftar Akun",
                       style: GoogleFonts.inter(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
@@ -122,29 +125,67 @@ class _RegisterState extends State<Register> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 80),
+                const SizedBox(height: 40),
                 // Tombol
                 Center(
                   child: _isLoading
                       ? const CircularProgressIndicator()
-                      : Container(
-                          width: 350,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: const Color(0xFF4C6496),
-                          ),
-                          child: TextButton(
-                            onPressed: () => _handleRegister(context),
-                            child: Text(
-                              "Daftarkan",
-                              style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFFFFFFFF),
+                      : Column(
+                          children: [
+                            // Tombol Daftarkan
+                            Container(
+                              width: 350,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: const Color(0xFF4C6496),
+                              ),
+                              child: TextButton(
+                                onPressed: () => _handleRegister(context),
+                                child: Text(
+                                  "Daftarkan",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFFFFFFF),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 20),
+                            // Tombol Sign in with Google
+                            Container(
+                              width: 350,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.white,
+                                border:
+                                    Border.all(color: const Color(0xFF4C6496)),
+                              ),
+                              child: TextButton(
+                                onPressed: () => _signInWithGoogle(context),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "images/google_icon.png", // Tambahkan logo Google
+                                      width: 24,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      "Sign in with Google",
+                                      style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF4C6496),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                 ),
               ],
@@ -190,71 +231,127 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  Future<void> _handleRegister(BuildContext context) async {
-  if (!_formKey.currentState!.validate()) return;
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
 
-  setState(() {
-    _isLoading = true;
-  });
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        Fluttertoast.showToast(
+          msg: "Login dibatalkan.",
+          backgroundColor: Colors.orange,
+          textColor: Colors.white,
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
-  try {
-    // Membuat pengguna baru di Firebase Authentication
-    final userCredential = await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-
-    // Simpan data pengguna ke Firestore
-    await _firestore.collection('users').doc(userCredential.user!.uid).set({
-      'nama': _namaController.text.trim(),
-      'email': _emailController.text.trim(),
-      'created_at': FieldValue.serverTimestamp(),
-    });
-
-    // Menampilkan Toast untuk memberitahu pengguna bahwa registrasi berhasil
-    Fluttertoast.showToast(
-      msg: 'Registrasi berhasil! Silakan login.',
-      backgroundColor: Colors.green,
-      textColor: Colors.white,
-    );
-
-    // Navigasi ke halaman login setelah data berhasil disimpan
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-        (route) => false, // Menghapus semua halaman sebelumnya dari stack
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
-    }
-  } on FirebaseAuthException catch (e) {
-    String message;
-    // Menangani berbagai jenis kesalahan dari Firebase Authentication
-    if (e.code == 'weak-password') {
-      message = 'Password terlalu lemah';
-    } else if (e.code == 'email-already-in-use') {
-      message = 'Email sudah terdaftar';
-    } else {
-      message = 'Terjadi kesalahan: ${e.message}';
-    }
-    Fluttertoast.showToast(
-      msg: message,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-    );
-  } catch (e) {
-    // Menangani kesalahan lainnya
-    print("Error: $e");
-    Fluttertoast.showToast(
-      msg: e.toString(),
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-    );
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
 
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      final user = userCredential.user!;
+      // Simpan ke Firestore jika pengguna baru
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        await _firestore.collection('users').doc(user.uid).set({
+          'nama': user.displayName,
+          'email': user.email,
+          'created_at': FieldValue.serverTimestamp(),
+        });
+      }
+
+      Fluttertoast.showToast(
+        msg: "Login berhasil!",
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+
+      // Navigasi ke HomePage
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error: $e",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleRegister(BuildContext context) async {
+    // Implementasi tombol daftar tetap sama seperti sebelumnya
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'nama': _namaController.text.trim(),
+        'email': _emailController.text.trim(),
+        'created_at': FieldValue.serverTimestamp(),
+      });
+
+      Fluttertoast.showToast(
+        msg: 'Registrasi berhasil! Silakan login.',
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Terjadi kesalahan: ${e.message}';
+      if (e.code == 'weak-password') {
+        message = 'Password terlalu lemah';
+      } else if (e.code == 'email-already-in-use') {
+        message = 'Email sudah terdaftar';
+      }
+
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: e.toString(),
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
